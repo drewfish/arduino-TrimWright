@@ -65,17 +65,6 @@ class Test : public HSM {
             this->dispatch(&event);
         }
 
-        DispatchOutcome stateROOT(const Event* event) {
-            if (SIG_INIT == event->signal) {
-                debugDispatch(event, "root");
-                return HSM_TRANSITION(&Test::stateS2);
-            }
-            if (SIG_SUPER == event->signal) {
-                return HSM_SUPER(NULL);
-            }
-            return HSM_HANDLED();
-        }
-
         DispatchOutcome stateS(const Event* event) {
             const char* NAME = "s";
             switch (event->signal) {
@@ -257,7 +246,7 @@ class Test : public HSM {
 
 int main(int argc, const char* argv[]) {
     cout << "INIT:  ";
-    test.init();
+    test.init((State) &Test::stateS2);
     cout << "   foo=" << int(test.foo) << endl;
 
     const char* EVENTS = "GIAD DCEE GII";

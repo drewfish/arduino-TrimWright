@@ -87,7 +87,7 @@ namespace DFActors {
             // This is called when a state is the target of a transition.
             // This will following the "init" internal transition (iteratively,
             // if there are any).
-            void init();
+            void init(State initial);
 
             // called to dispatch an event
             // this doesn't generally need to be overriden by child classes

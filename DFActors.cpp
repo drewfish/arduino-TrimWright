@@ -38,8 +38,11 @@ namespace DFActors {
 
 
     void
-    HSM::init() {
-        while (DISPATCH_TRANSITION == (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_INIT]))) {
+    HSM::init(State initial) {
+        m_stateCurrent = &HSM::stateROOT;
+        m_stateTemp = initial;
+        DispatchOutcome out = DISPATCH_TRANSITION;
+        while (DISPATCH_TRANSITION == out) {
             State source = m_stateCurrent;  // the transition "from" state
             State target = m_stateTemp;     // the transition "to" state
             State path[DFACTORS_MAX_STATE_DEPTH];
@@ -52,6 +55,7 @@ namespace DFActors {
                 (this->*(path[p-1]))(&(PSEUDOEVENTS[SIG_ENTER]));
             }
             m_stateCurrent = target;
+            out = (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_INIT]));
         }
     }
 
@@ -153,9 +157,7 @@ namespace DFActors {
             }
         } // not a self-transition
 
-        // We want to do this->init() to handle initial transition(s)
-        // of the target state.  We'll inline the algorithm here so
-        // that we can reuse existing stack variables.
+        // Handle the initial transition(s) of the target state
         while (DISPATCH_TRANSITION == (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_INIT]))) {
             source = m_stateCurrent;    // the transition "from" state
             target = m_stateTemp;       // the transition "to" state
@@ -179,6 +181,14 @@ namespace DFActors {
         }
         return HSM_HANDLED();
     }
+
+
+
+    //----------------------------------------------------------------------
+    // SUGAR FUNCTIONS
+    //
+    // TODO -- size_t dispatchAll()
+
 
 
 };

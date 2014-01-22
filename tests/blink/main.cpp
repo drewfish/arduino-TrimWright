@@ -3,6 +3,7 @@
 using namespace std;
 
 #include "../../DFActors.h"
+#include "../../DFActors.cpp"
 using namespace DFActors;
 
 
@@ -33,22 +34,10 @@ const char* signalName(uint8_t sig) {
 }
 
 
-class Blink : public Actor {
-    protected:
+class Blink : public HSM {
+    public:
         void debugDispatch(const Event* event, const char* stateName) {
             cout << "dispatch " << signalName(event->signal) << " to state " << stateName << endl;
-        }
-
-        DispatchOutcome stateROOT(const Event* event) {
-            debugDispatch(event, "ROOT");
-            switch (event->signal) {
-                case SIG_INIT:
-                    return TRANSITION(&Blink::stateON);
-                case SIG_SUPER:
-                    return SUPER(NULL);
-                default:
-                    return HANDLED();
-            }
         }
 
         DispatchOutcome stateON(const Event* event) {
@@ -56,14 +45,14 @@ class Blink : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     hw.setLED(true);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_IDLE:
                     hw.sleep();
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_TIMER:
-                    return TRANSITION(&Blink::stateOFF);
+                    return HSM_TRANSITION(&Blink::stateOFF);
                 default:
-                    return SUPER(&Blink::stateROOT);
+                    return HSM_SUPER(&Blink::stateROOT);
             }
         }
 
@@ -72,14 +61,14 @@ class Blink : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     hw.setLED(false);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_IDLE:
                     hw.sleep();
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_TIMER:
-                    return TRANSITION(&Blink::stateON);
+                    return HSM_TRANSITION(&Blink::stateON);
                 default:
-                    return SUPER(&Blink::stateROOT);
+                    return HSM_SUPER(&Blink::stateROOT);
             }
         }
 } blink;
@@ -94,7 +83,7 @@ void Hardware::loop() {
     cout << "------hw loop---- " << m_loops << endl;
     ++m_loops;
     if (0 == m_loops % 3) {
-        DFACTORS_EVENT_CLASS event;
+        Event event;
         event.signal = (Signal) SIG_TIMER;
         blink.dispatch(&event);
     }
@@ -113,7 +102,7 @@ void Hardware::sleep() {
 int main(int argc, const char* argv[]) {
     // setup
     hw.setup();
-    blink.init();
+    blink.init((State) &Blink::stateON);
 
     // loop
     for (int i = 0; i < 10; i++) {

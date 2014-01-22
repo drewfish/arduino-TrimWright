@@ -22,18 +22,7 @@ enum {
 
 
 class Blink : public HSM {
-    protected:
-        DispatchOutcome stateROOT(const Event* event) {
-            switch (event->signal) {
-                case SIG_INIT:
-                    return HSM_TRANSITION(&Blink::stateON);
-                case SIG_SUPER:
-                    return HSM_SUPER(NULL);
-                default:
-                    return HSM_HANDLED();
-            }
-        }
-
+    public:
         DispatchOutcome stateON(const Event* event) {
             switch (event->signal) {
                 case SIG_ENTER:
@@ -96,7 +85,7 @@ void Hardware::sleep() {
 
 void setup() {
     hw.setup();
-    blink.init();
+    blink.init((State) &Blink::stateON);
 }
 
 
