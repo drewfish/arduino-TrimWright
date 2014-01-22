@@ -3,12 +3,11 @@
 //
 
 
-#pragma GCC diagnostic ignored "-Wswitch"
-
 #include <iostream>
 using namespace std;
 
 #include "../../DFActors.h"
+#include "../../DFActors.cpp"
 using namespace DFActors;
 
 
@@ -50,31 +49,31 @@ void debugDispatch(const Event* event, const char* stateName) {
 }
 
 
-class Test : public Actor {
+class Test : public HSM {
     public:
         uint8_t foo;
 
         void post(char e) {
             Event event;
-            event.signal = Signal(SIG_USER + (e - 'A'));
+            event.signal = SIG_USER + (e - 'A');
             this->dispatch(&event);
         }
 
         void terminate() {
             Event event;
-            event.signal = Signal(SIG_TERMINATE);
+            event.signal = SIG_TERMINATE;
             this->dispatch(&event);
         }
 
         DispatchOutcome stateROOT(const Event* event) {
             if (SIG_INIT == event->signal) {
                 debugDispatch(event, "root");
-                return TRANSITION(&Test::stateS2);
+                return HSM_TRANSITION(&Test::stateS2);
             }
             if (SIG_SUPER == event->signal) {
-                return SUPER(NULL);
+                return HSM_SUPER(NULL);
             }
-            return HANDLED();
+            return HSM_HANDLED();
         }
 
         DispatchOutcome stateS(const Event* event) {
@@ -82,29 +81,29 @@ class Test : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_INIT:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS11);
+                    return HSM_TRANSITION(&Test::stateS11);
                 case SIG_E:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS11);
+                    return HSM_TRANSITION(&Test::stateS11);
                 case SIG_I:
                     if (this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 0;
-                        return HANDLED();
+                        return HSM_HANDLED();
                     }
                     else {
-                        return UNHANDLED();
+                        return HSM_UNHANDLED();
                     }
                 case SIG_TERMINATE:
                     exit(0);
             }
-            return SUPER(&Test::stateROOT);
+            return HSM_SUPER(&Test::stateROOT);
         }
 
         DispatchOutcome stateS1(const Event* event) {
@@ -112,40 +111,40 @@ class Test : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_INIT:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS11);
+                    return HSM_TRANSITION(&Test::stateS11);
                 case SIG_A:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS1);
+                    return HSM_TRANSITION(&Test::stateS1);
                 case SIG_B:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS11);
+                    return HSM_TRANSITION(&Test::stateS11);
                 case SIG_C:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS2);
+                    return HSM_TRANSITION(&Test::stateS2);
                 case SIG_D:
                     if (!this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 1;
-                        return TRANSITION(&Test::stateS);
+                        return HSM_TRANSITION(&Test::stateS);
                     }
                     else {
-                        return UNHANDLED();
+                        return HSM_UNHANDLED();
                     }
                     break;
                 case SIG_F:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS211);
+                    return HSM_TRANSITION(&Test::stateS211);
                 case SIG_I:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
             }
-            return SUPER(&Test::stateS);
+            return HSM_SUPER(&Test::stateS);
         }
 
         DispatchOutcome stateS11(const Event* event) {
@@ -153,28 +152,28 @@ class Test : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_D:
                     if (this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 0;
-                        return TRANSITION(&Test::stateS1);
+                        return HSM_TRANSITION(&Test::stateS1);
                     }
                     else {
-                        return UNHANDLED();
+                        return HSM_UNHANDLED();
                     }
                     break;
                 case SIG_G:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS211);
+                    return HSM_TRANSITION(&Test::stateS211);
                 case SIG_H:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS);
+                    return HSM_TRANSITION(&Test::stateS);
             }
-            return SUPER(&Test::stateS1);
+            return HSM_SUPER(&Test::stateS1);
         }
 
         DispatchOutcome stateS2(const Event* event) {
@@ -182,31 +181,31 @@ class Test : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_INIT:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS211);
+                    return HSM_TRANSITION(&Test::stateS211);
                 case SIG_C:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS1);
+                    return HSM_TRANSITION(&Test::stateS1);
                 case SIG_F:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS11);
+                    return HSM_TRANSITION(&Test::stateS11);
                 case SIG_I:
                     if (!this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 1;
-                        return HANDLED();
+                        return HSM_HANDLED();
                     }
                     else {
-                        return UNHANDLED();
+                        return HSM_UNHANDLED();
                     }
                     break;
             }
-            return SUPER(&Test::stateS);
+            return HSM_SUPER(&Test::stateS);
         }
 
         DispatchOutcome stateS21(const Event* event) {
@@ -214,24 +213,24 @@ class Test : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_INIT:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS211);
+                    return HSM_TRANSITION(&Test::stateS211);
                 case SIG_A:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS21);
+                    return HSM_TRANSITION(&Test::stateS21);
                 case SIG_B:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS211);
+                    return HSM_TRANSITION(&Test::stateS211);
                 case SIG_G:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS1);
+                    return HSM_TRANSITION(&Test::stateS1);
             }
-            return SUPER(&Test::stateS2);
+            return HSM_SUPER(&Test::stateS2);
         }
 
         DispatchOutcome stateS211(const Event* event) {
@@ -239,18 +238,18 @@ class Test : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_D:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS21);
+                    return HSM_TRANSITION(&Test::stateS21);
                 case SIG_H:
                     debugDispatch(event, NAME);
-                    return TRANSITION(&Test::stateS);
+                    return HSM_TRANSITION(&Test::stateS);
             }
-            return SUPER(&Test::stateS21);
+            return HSM_SUPER(&Test::stateS21);
         }
 
 } test;

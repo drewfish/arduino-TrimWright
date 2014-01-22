@@ -21,16 +21,16 @@ enum {
 };
 
 
-class Blink : public Actor {
+class Blink : public HSM {
     protected:
         DispatchOutcome stateROOT(const Event* event) {
             switch (event->signal) {
                 case SIG_INIT:
-                    return TRANSITION(&Blink::stateON);
+                    return HSM_TRANSITION(&Blink::stateON);
                 case SIG_SUPER:
-                    return SUPER(NULL);
+                    return HSM_SUPER(NULL);
                 default:
-                    return HANDLED();
+                    return HSM_HANDLED();
             }
         }
 
@@ -38,14 +38,14 @@ class Blink : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     hw.setLED(true);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_IDLE:
                     hw.sleep();
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_TIMER:
-                    return TRANSITION(&Blink::stateOFF);
+                    return HSM_TRANSITION(&Blink::stateOFF);
                 default:
-                    return SUPER(&Blink::stateROOT);
+                    return HSM_SUPER(&Blink::stateROOT);
             }
         }
 
@@ -53,14 +53,14 @@ class Blink : public Actor {
             switch (event->signal) {
                 case SIG_ENTER:
                     hw.setLED(false);
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_IDLE:
                     hw.sleep();
-                    return HANDLED();
+                    return HSM_HANDLED();
                 case SIG_TIMER:
-                    return TRANSITION(&Blink::stateON);
+                    return HSM_TRANSITION(&Blink::stateON);
                 default:
-                    return SUPER(&Blink::stateROOT);
+                    return HSM_SUPER(&Blink::stateROOT);
             }
         }
 } blink;
@@ -76,7 +76,7 @@ void Hardware::loop() {
     uint32_t now = millis();
     if (now >= timeout) {
         timeout = now + TIMEOUT;
-        DFACTORS_EVENT_CLASS event;
+        Event event;
         event.signal = (Signal) SIG_TIMER;
         blink.dispatch(&event);
     }
