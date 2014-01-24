@@ -1,0 +1,22 @@
+------------------------------------- RING BUFFER
+size 0 -- front NULL
+size 0 -- front NULL
+size 1 -- front sig=10
+size 2 -- front sig=10
+size 3 -- front sig=10
+size 4 -- front sig=10
+size 5 -- front sig=10
+size 5 -- front sig=10
+
+size 4 -- front sig=11
+size 3 -- front sig=12
+size 2 -- front sig=13
+size 1 -- front sig=14
+size 0 -- front NULL
+size 0 -- front NULL
+
+size 1 -- front sig=16
+size 2 -- front sig=16
+size 1 -- front sig=17
+size 0 -- front NULL
+
