@@ -97,16 +97,6 @@ namespace DFActors {
     };
 
 
-    // a queue implementation that takes ownership of events allocated on the heap
-    class QueueHeap : public IQueue {
-        public:
-            virtual void push_back(Event*);
-            virtual Event* front();
-            virtual void pop_front();
-            virtual uint8_t size();
-    };
-
-
     // a queue implementation that stores (copies of) the events in a ring buffer
     template <class EventType, uint8_t MAX_EVENTS>
     class QueueRingBuffer : public IQueue {
