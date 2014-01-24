@@ -1,0 +1,12 @@
+INIT:  s2-ENTER;s2-INIT;s2-LEAVE;s211-ENTER;   foo=0
+G:     foo=0
+I:     foo=0
+A:     foo=0
+D:  s211-D;s211-LEAVE;s21-ENTER;s21-INIT;s21-LEAVE;s211-ENTER;   foo=0
+D:  s211-D;s211-LEAVE;s21-ENTER;s21-INIT;s21-LEAVE;s211-ENTER;   foo=0
+C:     foo=0
+E:     foo=0
+E:     foo=0
+G:     foo=0
+I:     foo=0
+I:     foo=0
