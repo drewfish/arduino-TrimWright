@@ -2,9 +2,9 @@
 #include <iostream>
 using namespace std;
 
-#include "../../DFActors.h"
-#include "../../DFActors.cpp"
-using namespace DFActors;
+#include "../../TrimWright.h"
+#include "../../TrimWright.cpp"
+using namespace TrimWright;
 
 
 char debugBuffer[32];

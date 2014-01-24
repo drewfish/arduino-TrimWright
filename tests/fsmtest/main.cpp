@@ -6,12 +6,12 @@
 #include <iostream>
 using namespace std;
 
-#include "../../DFActors.h"
-#include "../../DFActors.cpp"
+#include "../../TrimWright.h"
+#include "../../TrimWright.cpp"
 
 
 enum {
-    SIG_A = DFActors::SIG_USER,
+    SIG_A = TrimWright::SIG_USER,
     SIG_B,
     SIG_C,
     SIG_D,
@@ -25,11 +25,11 @@ enum {
 
 
 const char* signalName(uint8_t sig) {
-    if (sig == DFActors::SIG_SUPER) { return "SUPER"; }
-    if (sig == DFActors::SIG_ENTER) { return "ENTER"; }
-    if (sig == DFActors::SIG_LEAVE) { return "LEAVE"; }
-    if (sig == DFActors::SIG_INIT)  { return "INIT"; }
-    if (sig == DFActors::SIG_IDLE)  { return "IDLE"; }
+    if (sig == TrimWright::SIG_SUPER) { return "SUPER"; }
+    if (sig == TrimWright::SIG_ENTER) { return "ENTER"; }
+    if (sig == TrimWright::SIG_LEAVE) { return "LEAVE"; }
+    if (sig == TrimWright::SIG_INIT)  { return "INIT"; }
+    if (sig == TrimWright::SIG_IDLE)  { return "IDLE"; }
     if (sig == SIG_A)   { return "A"; }
     if (sig == SIG_B)   { return "B"; }
     if (sig == SIG_C)   { return "C"; }
@@ -42,202 +42,202 @@ const char* signalName(uint8_t sig) {
     if (sig == SIG_TERMINATE) { return "TERMINATE"; }
     return "???";
 }
-void debugDispatch(const DFActors::Event* event, const char* stateName) {
-    //if (DFActors::SIG_SUPER == event->signal) { return; }
+void debugDispatch(const TrimWright::Event* event, const char* stateName) {
+    //if (TrimWright::SIG_SUPER == event->signal) { return; }
     cout << stateName << "-" << (signalName(event->signal)) << ";";
 }
 
 
-class Test : public DFActors::FSM {
+class Test : public TrimWright::FSM {
     public:
         uint8_t foo;
 
         void post(char e) {
-            DFActors::Event event;
-            event.signal = DFActors::SIG_USER + (e - 'A');
+            TrimWright::Event event;
+            event.signal = TrimWright::SIG_USER + (e - 'A');
             this->dispatch(&event);
         }
 
         void terminate() {
-            DFActors::Event event;
+            TrimWright::Event event;
             event.signal = SIG_TERMINATE;
             this->dispatch(&event);
         }
 
-        DFActors::DispatchOutcome stateS(const DFActors::Event* event) {
+        TrimWright::DispatchOutcome stateS(const TrimWright::Event* event) {
             const char* NAME = "s";
             switch (event->signal) {
-                case DFActors::SIG_ENTER:
+                case TrimWright::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_LEAVE:
+                    return TW_HANDLED();
+                case TrimWright::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_INIT:
+                    return TW_HANDLED();
+                case TrimWright::SIG_INIT:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS11);
+                    return TW_TRANSITION(&Test::stateS11);
                 case SIG_E:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS11);
+                    return TW_TRANSITION(&Test::stateS11);
                 case SIG_I:
                     if (this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 0;
-                        return FSM_HANDLED();
+                        return TW_HANDLED();
                     }
                     else {
-                        return FSM_UNHANDLED();
+                        return TW_UNHANDLED();
                     }
                 case SIG_TERMINATE:
                     exit(0);
             }
-            return FSM_HANDLED();
+            return TW_HANDLED();
         }
 
-        DFActors::DispatchOutcome stateS1(const DFActors::Event* event) {
+        TrimWright::DispatchOutcome stateS1(const TrimWright::Event* event) {
             const char* NAME = "s1";
             switch (event->signal) {
-                case DFActors::SIG_ENTER:
+                case TrimWright::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_LEAVE:
+                    return TW_HANDLED();
+                case TrimWright::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_INIT:
+                    return TW_HANDLED();
+                case TrimWright::SIG_INIT:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS11);
+                    return TW_TRANSITION(&Test::stateS11);
                 case SIG_A:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS1);
+                    return TW_TRANSITION(&Test::stateS1);
                 case SIG_B:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS11);
+                    return TW_TRANSITION(&Test::stateS11);
                 case SIG_C:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS2);
+                    return TW_TRANSITION(&Test::stateS2);
                 case SIG_D:
                     if (!this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 1;
-                        return FSM_TRANSITION(&Test::stateS);
+                        return TW_TRANSITION(&Test::stateS);
                     }
                     else {
-                        return FSM_UNHANDLED();
+                        return TW_UNHANDLED();
                     }
                     break;
                 case SIG_F:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS211);
+                    return TW_TRANSITION(&Test::stateS211);
                 case SIG_I:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
+                    return TW_HANDLED();
             }
-            return FSM_HANDLED();
+            return TW_HANDLED();
         }
 
-        DFActors::DispatchOutcome stateS11(const DFActors::Event* event) {
+        TrimWright::DispatchOutcome stateS11(const TrimWright::Event* event) {
             const char* NAME = "s11";
             switch (event->signal) {
-                case DFActors::SIG_ENTER:
+                case TrimWright::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_LEAVE:
+                    return TW_HANDLED();
+                case TrimWright::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
+                    return TW_HANDLED();
                 case SIG_D:
                     if (this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 0;
-                        return FSM_TRANSITION(&Test::stateS1);
+                        return TW_TRANSITION(&Test::stateS1);
                     }
                     else {
-                        return FSM_UNHANDLED();
+                        return TW_UNHANDLED();
                     }
                     break;
                 case SIG_G:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS211);
+                    return TW_TRANSITION(&Test::stateS211);
                 case SIG_H:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS);
+                    return TW_TRANSITION(&Test::stateS);
             }
-            return FSM_HANDLED();
+            return TW_HANDLED();
         }
 
-        DFActors::DispatchOutcome stateS2(const DFActors::Event* event) {
+        TrimWright::DispatchOutcome stateS2(const TrimWright::Event* event) {
             const char* NAME = "s2";
             switch (event->signal) {
-                case DFActors::SIG_ENTER:
+                case TrimWright::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_LEAVE:
+                    return TW_HANDLED();
+                case TrimWright::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_INIT:
+                    return TW_HANDLED();
+                case TrimWright::SIG_INIT:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS211);
+                    return TW_TRANSITION(&Test::stateS211);
                 case SIG_C:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS1);
+                    return TW_TRANSITION(&Test::stateS1);
                 case SIG_F:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS11);
+                    return TW_TRANSITION(&Test::stateS11);
                 case SIG_I:
                     if (!this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 1;
-                        return FSM_HANDLED();
+                        return TW_HANDLED();
                     }
                     else {
-                        return FSM_UNHANDLED();
+                        return TW_UNHANDLED();
                     }
                     break;
             }
-            return FSM_HANDLED();
+            return TW_HANDLED();
         }
 
-        DFActors::DispatchOutcome stateS21(const DFActors::Event* event) {
+        TrimWright::DispatchOutcome stateS21(const TrimWright::Event* event) {
             const char* NAME = "s21";
             switch (event->signal) {
-                case DFActors::SIG_ENTER:
+                case TrimWright::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_LEAVE:
+                    return TW_HANDLED();
+                case TrimWright::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_INIT:
+                    return TW_HANDLED();
+                case TrimWright::SIG_INIT:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS211);
+                    return TW_TRANSITION(&Test::stateS211);
                 case SIG_A:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS21);
+                    return TW_TRANSITION(&Test::stateS21);
                 case SIG_B:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS211);
+                    return TW_TRANSITION(&Test::stateS211);
                 case SIG_G:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS1);
+                    return TW_TRANSITION(&Test::stateS1);
             }
-            return FSM_HANDLED();
+            return TW_HANDLED();
         }
 
-        DFActors::DispatchOutcome stateS211(const DFActors::Event* event) {
+        TrimWright::DispatchOutcome stateS211(const TrimWright::Event* event) {
             const char* NAME = "s211";
             switch (event->signal) {
-                case DFActors::SIG_ENTER:
+                case TrimWright::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
-                case DFActors::SIG_LEAVE:
+                    return TW_HANDLED();
+                case TrimWright::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return FSM_HANDLED();
+                    return TW_HANDLED();
                 case SIG_D:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS21);
+                    return TW_TRANSITION(&Test::stateS21);
                 case SIG_H:
                     debugDispatch(event, NAME);
-                    return FSM_TRANSITION(&Test::stateS);
+                    return TW_TRANSITION(&Test::stateS);
             }
-            return FSM_HANDLED();
+            return TW_HANDLED();
         }
 
 } test;
@@ -245,7 +245,7 @@ class Test : public DFActors::FSM {
 
 int main(int argc, const char* argv[]) {
     cout << "INIT:  ";
-    test.init((DFActors::State) &Test::stateS2);
+    test.init((TrimWright::State) &Test::stateS2);
     cout << "   foo=" << int(test.foo) << endl;
 
     const char* EVENTS = "GIAD DCEE GII";

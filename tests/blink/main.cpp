@@ -2,9 +2,9 @@
 #include <iostream>
 using namespace std;
 
-#include "../../DFActors.h"
-#include "../../DFActors.cpp"
-using namespace DFActors;
+#include "../../TrimWright.h"
+#include "../../TrimWright.cpp"
+using namespace TrimWright;
 
 
 enum {
@@ -34,11 +34,11 @@ class Blink : public FSM {
             switch (event->signal) {
                 case SIG_ENTER:
                     cout << "------setLED---- ON" << endl;
-                    return FSM_HANDLED();
+                    return TW_HANDLED();
                 case SIG_TIMER:
-                    return FSM_TRANSITION(&Blink::stateOFF);
+                    return TW_TRANSITION(&Blink::stateOFF);
                 default:
-                    return FSM_HANDLED();
+                    return TW_HANDLED();
             }
         }
 
@@ -47,11 +47,11 @@ class Blink : public FSM {
             switch (event->signal) {
                 case SIG_ENTER:
                     cout << "------setLED---- OFF" << endl;
-                    return FSM_HANDLED();
+                    return TW_HANDLED();
                 case SIG_TIMER:
-                    return FSM_TRANSITION(&Blink::stateON);
+                    return TW_TRANSITION(&Blink::stateON);
                 default:
-                    return FSM_HANDLED();
+                    return TW_HANDLED();
             }
         }
 } blink;

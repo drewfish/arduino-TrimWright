@@ -2,9 +2,9 @@
 #include <iostream>
 using namespace std;
 
-#include "../../DFActors.h"
-#include "../../DFActors.cpp"
-using namespace DFActors;
+#include "../../TrimWright.h"
+#include "../../TrimWright.cpp"
+using namespace TrimWright;
 
 
 enum {
@@ -37,7 +37,7 @@ class StateMachine : public FSM {
     public:
         DispatchOutcome stateDEBUG(Event* event) {
             cout << "got " << signalName(event->signal) << endl;
-            return FSM_HANDLED();
+            return TW_HANDLED();
         }
 };
 

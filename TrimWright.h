@@ -1,13 +1,13 @@
-#ifndef DFACTORS_H
-#define DFACTORS_H
+#ifndef TRIMWRIGHT_H
+#define TRIMWRIGHT_H
 
-#ifndef DFACTORS_MAX_STATE_DEPTH
-    #define DFACTORS_MAX_STATE_DEPTH 6
+#ifndef TRIMWRIGHT_MAX_STATE_DEPTH
+    #define TRIMWRIGHT_MAX_STATE_DEPTH 6
 #endif
 
 #include <stdint.h>
 
-namespace DFActors {
+namespace TrimWright {
 
 
     //----------------------------------------------------------------------
@@ -30,7 +30,7 @@ namespace DFActors {
 
     // Returned by a state as the outcome of dispatching an event to the state.
     // It is much better to use the macros below, for example:
-    //      return FSM_HANDLED();
+    //      return TW_HANDLED();
     enum DispatchOutcome {
         DISPATCH_HANDLED,
         DISPATCH_UNHANDLED,
@@ -39,22 +39,22 @@ namespace DFActors {
     };
 
     // Returned by a state to report that it has handled the event.
-    #define FSM_HANDLED()       (DFActors::DISPATCH_HANDLED)
+    #define TW_HANDLED()        (TrimWright::DISPATCH_HANDLED)
 
     // Returned by a state to report that it has not handled the event.
     // This is most useful inside complex conditional structurs in guards.
-    // Otherwise it is slightly better to return HSM_SUPER() instead.
+    // Otherwise it is slightly better to return TW_SUPER() instead.
     // States should never return this when handling SIG_ENTER or SIG_LEAVE.
-    #define FSM_UNHANDLED()     (DFActors::DISPATCH_UNHANDLED)
+    #define TW_UNHANDLED()      (TrimWright::DISPATCH_UNHANDLED)
 
     // Returned by a state to transition to another state.
     // States should never return this when handling SIG_ENTER or SIG_LEAVE.
-    #define FSM_TRANSITION(s)   ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_TRANSITION)
+    #define TW_TRANSITION(s)    ((m_stateTemp = TrimWright::State(s)), TrimWright::DISPATCH_TRANSITION)
 
     // Returned by a state (in an HSM) to report the parent state.
     // This should definitely be returned for SIG_SUPER, but is also generally
     // returned for any unhandled event.
-    #define HSM_SUPER(s)        ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_SUPER)
+    #define TW_SUPER(s)         ((m_stateTemp = TrimWright::State(s)), TrimWright::DISPATCH_SUPER)
 
 
 
@@ -99,7 +99,7 @@ namespace DFActors {
         protected:
             // root of the state hierarchy
             // top-level states of the application should report this as their
-            // super states via HSM_SUPER((State) &HSM::stateROOT).
+            // super states via TW_SUPER((State) &HSM::stateROOT).
             DispatchOutcome stateROOT(const Event* event);
 
         public:
