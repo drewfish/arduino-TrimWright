@@ -7,7 +7,7 @@ namespace DFActors {
 
 
     //----------------------------------------------------------------------
-    // FSM
+    // FINITE STATE MACHINE
     //
 
     Event FSM::PSEUDOEVENTS[5] = {
@@ -49,7 +49,7 @@ namespace DFActors {
 
 
     //----------------------------------------------------------------------
-    // HSM
+    // HIERARCHICAL STATE MACHINE
     //
 
     void
@@ -202,7 +202,27 @@ namespace DFActors {
     //----------------------------------------------------------------------
     // SUGAR FUNCTIONS
     //
-    // TODO -- size_t dispatchAll()
+
+    void
+    dispatchIdle(FSM* machine) {
+        machine->dispatch(&(FSM::PSEUDOEVENTS[SIG_IDLE]));
+    }
+
+
+    void
+    dispatchAll(FSM* machine, IQueue* queue, bool idleIfEmpty) {
+        if (queue->size()) {
+            while (queue->size()) {
+                machine->dispatch(queue->front());
+                queue->pop_front();
+            }
+        }
+        else {
+            if (idleIfEmpty) {
+                dispatchIdle(machine);
+            }
+        }
+    }
 
 
 

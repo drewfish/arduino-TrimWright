@@ -10,8 +10,12 @@
 namespace DFActors {
 
 
+    //----------------------------------------------------------------------
+    // Basic supporting data types (and macros)
+    //
+
     typedef enum {
-        SIG_SUPER = 0,  // state should report its super-state
+        SIG_SUPER = 0,  // state (in an HSM) should report its super-state
         SIG_ENTER,      // state was entered
         SIG_LEAVE,      // state is about to be left
         SIG_INIT,       // state should take its initial transition
@@ -24,7 +28,7 @@ namespace DFActors {
     };
 
 
-    // Returned by a state as the outcome of dispatching the event to the state.
+    // Returned by a state as the outcome of dispatching an event to the state.
     // It is much better to use the macros below, for example:
     //      return FSM_HANDLED();
     enum DispatchOutcome {
@@ -38,18 +42,26 @@ namespace DFActors {
     #define FSM_HANDLED()       (DFActors::DISPATCH_HANDLED)
 
     // Returned by a state to report that it has not handled the event.
-    // This is more useful inside complex conditional structurs in guards.
+    // This is most useful inside complex conditional structurs in guards.
     // Otherwise it is slightly better to return HSM_SUPER() instead.
+    // States should never return this when handling SIG_ENTER or SIG_LEAVE.
     #define FSM_UNHANDLED()     (DFActors::DISPATCH_UNHANDLED)
 
     // Returned by a state to transition to another state.
+    // States should never return this when handling SIG_ENTER or SIG_LEAVE.
     #define FSM_TRANSITION(s)   ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_TRANSITION)
 
-    // Returned by a state to report parent state.
+    // Returned by a state (in an HSM) to report the parent state.
     // This should definitely be returned for SIG_SUPER, but is also generally
     // returned for any unhandled event.
     #define HSM_SUPER(s)        ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_SUPER)
 
+
+
+    //----------------------------------------------------------------------
+    // Finite State Machine class
+    // This is a good choice if the state machine is "flat" (not hierarchical).
+    //
 
     class FSM;
     typedef DispatchOutcome (FSM::* State)(const Event* event);
@@ -60,6 +72,7 @@ namespace DFActors {
             static Event    PSEUDOEVENTS[5];
             State           m_stateCurrent;
             State           m_stateTemp;
+            friend void dispatchIdle(FSM*);
 
         public:
             FSM();
@@ -74,6 +87,13 @@ namespace DFActors {
             void dispatch(const Event* event);
     };
 
+
+
+    //----------------------------------------------------------------------
+    // Hierarchical State Machine class
+    // This is a good choice if the states in the state machine are
+    // hierarchical.
+    //
 
     class HSM : public FSM {
         protected:
@@ -93,6 +113,13 @@ namespace DFActors {
             void dispatch(const Event* event);
     };
 
+
+
+    //----------------------------------------------------------------------
+    // Event Queue
+    // This is handy if it's a difficult or unnatural for your sketch to
+    // dispatch the event as soon as it is generated.
+    //
 
     // interface for all queue implementations
     class IQueue {
@@ -170,6 +197,21 @@ namespace DFActors {
             }
     };
 
+
+
+    //----------------------------------------------------------------------
+    // "Sugar" Functions
+    // These are necessary but might be handy.
+    //
+
+    // Dispatches an event (of the Event class) with the SIG_IDLE signal.
+    void dispatchIdle(FSM* machine);
+
+
+    // Dispatches all events in the queue to the state machine.
+    // If `idleIfEmpty` is true and there are no events in the queue
+    // then a SIG_IDLE event will be dispatched to the state machine.
+    void dispatchAll(FSM* machine, IQueue* queue, bool idleIfEmpty);
 
 };
 
