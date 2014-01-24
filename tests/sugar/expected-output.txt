@@ -1,0 +1,23 @@
+got ENTER
+got INIT
+---------------------------------------------- test dispatchIdle()
+got IDLE
+
+---------------------------------------------- test dispatchAll()
+got sig=A
+got sig=B
+got sig=C
+got sig=D
+----
+----
+got IDLE
+----
+got sig=E
+got sig=F
+got sig=G
+got sig=H
+got sig=I
+----
+got IDLE
+----
+
