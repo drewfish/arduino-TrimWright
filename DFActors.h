@@ -35,20 +35,20 @@ namespace DFActors {
     };
 
     // Returned by a state to report that it has handled the event.
-    #define HSM_HANDLED()       (DISPATCH_HANDLED)
+    #define HSM_HANDLED()       (DFActors::DISPATCH_HANDLED)
 
     // Returned by a state to report that it has not handled the event.
     // This is more useful inside complex conditional structurs in guards.
     // Otherwise it is slightly better to return HSM_SUPER() instead.
-    #define HSM_UNHANDLED()     (DISPATCH_UNHANDLED)
+    #define HSM_UNHANDLED()     (DFActors::DISPATCH_UNHANDLED)
 
     // Returned by a state to transition to another state.
-    #define HSM_TRANSITION(s)   ((m_stateTemp = State(s)), DISPATCH_TRANSITION)
+    #define HSM_TRANSITION(s)   ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_TRANSITION)
 
     // Returned by a state to report parent state.
     // This should definitely be returned for SIG_SUPER, but is also generally
     // returned for any unhandled event.
-    #define HSM_SUPER(s)        ((m_stateTemp = State(s)), DISPATCH_SUPER)
+    #define HSM_SUPER(s)        ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_SUPER)
 
 
     class HSM;
