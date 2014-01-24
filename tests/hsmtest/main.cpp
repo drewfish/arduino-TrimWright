@@ -69,24 +69,24 @@ class Test : public DFActors::HSM {
             switch (event->signal) {
                 case DFActors::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_INIT:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS11);
+                    return FSM_TRANSITION(&Test::stateS11);
                 case SIG_E:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS11);
+                    return FSM_TRANSITION(&Test::stateS11);
                 case SIG_I:
                     if (this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 0;
-                        return HSM_HANDLED();
+                        return FSM_HANDLED();
                     }
                     else {
-                        return HSM_UNHANDLED();
+                        return FSM_UNHANDLED();
                     }
                 case SIG_TERMINATE:
                     exit(0);
@@ -99,38 +99,38 @@ class Test : public DFActors::HSM {
             switch (event->signal) {
                 case DFActors::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_INIT:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS11);
+                    return FSM_TRANSITION(&Test::stateS11);
                 case SIG_A:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS1);
+                    return FSM_TRANSITION(&Test::stateS1);
                 case SIG_B:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS11);
+                    return FSM_TRANSITION(&Test::stateS11);
                 case SIG_C:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS2);
+                    return FSM_TRANSITION(&Test::stateS2);
                 case SIG_D:
                     if (!this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 1;
-                        return HSM_TRANSITION(&Test::stateS);
+                        return FSM_TRANSITION(&Test::stateS);
                     }
                     else {
-                        return HSM_UNHANDLED();
+                        return FSM_UNHANDLED();
                     }
                     break;
                 case SIG_F:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS211);
+                    return FSM_TRANSITION(&Test::stateS211);
                 case SIG_I:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
             }
             return HSM_SUPER(&Test::stateS);
         }
@@ -140,26 +140,26 @@ class Test : public DFActors::HSM {
             switch (event->signal) {
                 case DFActors::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case SIG_D:
                     if (this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 0;
-                        return HSM_TRANSITION(&Test::stateS1);
+                        return FSM_TRANSITION(&Test::stateS1);
                     }
                     else {
-                        return HSM_UNHANDLED();
+                        return FSM_UNHANDLED();
                     }
                     break;
                 case SIG_G:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS211);
+                    return FSM_TRANSITION(&Test::stateS211);
                 case SIG_H:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS);
+                    return FSM_TRANSITION(&Test::stateS);
             }
             return HSM_SUPER(&Test::stateS1);
         }
@@ -169,27 +169,27 @@ class Test : public DFActors::HSM {
             switch (event->signal) {
                 case DFActors::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_INIT:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS211);
+                    return FSM_TRANSITION(&Test::stateS211);
                 case SIG_C:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS1);
+                    return FSM_TRANSITION(&Test::stateS1);
                 case SIG_F:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS11);
+                    return FSM_TRANSITION(&Test::stateS11);
                 case SIG_I:
                     if (!this->foo) {
                         debugDispatch(event, NAME);
                         this->foo = 1;
-                        return HSM_HANDLED();
+                        return FSM_HANDLED();
                     }
                     else {
-                        return HSM_UNHANDLED();
+                        return FSM_UNHANDLED();
                     }
                     break;
             }
@@ -201,22 +201,22 @@ class Test : public DFActors::HSM {
             switch (event->signal) {
                 case DFActors::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_INIT:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS211);
+                    return FSM_TRANSITION(&Test::stateS211);
                 case SIG_A:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS21);
+                    return FSM_TRANSITION(&Test::stateS21);
                 case SIG_B:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS211);
+                    return FSM_TRANSITION(&Test::stateS211);
                 case SIG_G:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS1);
+                    return FSM_TRANSITION(&Test::stateS1);
             }
             return HSM_SUPER(&Test::stateS2);
         }
@@ -226,16 +226,16 @@ class Test : public DFActors::HSM {
             switch (event->signal) {
                 case DFActors::SIG_ENTER:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case DFActors::SIG_LEAVE:
                     debugDispatch(event, NAME);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case SIG_D:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS21);
+                    return FSM_TRANSITION(&Test::stateS21);
                 case SIG_H:
                     debugDispatch(event, NAME);
-                    return HSM_TRANSITION(&Test::stateS);
+                    return FSM_TRANSITION(&Test::stateS);
             }
             return HSM_SUPER(&Test::stateS21);
         }

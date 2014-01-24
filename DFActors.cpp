@@ -5,26 +5,13 @@
 namespace DFActors {
 
 
-    //----------------------------------------------------------------------
-    // QUEUE HEAP
-    //
-    // TODO -- implement this
-
-
 
     //----------------------------------------------------------------------
-    // QUEUE HEAP
-    //
-    // TODO -- implement this
-
-
-
-    //----------------------------------------------------------------------
-    // HSM
+    // FSM
     //
 
-    Event HSM::PSEUDOEVENTS[5] = {
-        { SIG_SUPER },
+    Event FSM::PSEUDOEVENTS[5] = {
+        { SIG_SUPER },  // not needed by FSM but used by HSM
         { SIG_ENTER },
         { SIG_LEAVE },
         { SIG_INIT },
@@ -32,14 +19,41 @@ namespace DFActors {
     };
 
 
-    HSM::HSM() : m_stateCurrent(&HSM::stateROOT), m_stateTemp(0) {
+    FSM::FSM() : m_stateCurrent(0), m_stateTemp(0) {
         // nothing to do
     }
 
 
     void
+    FSM::init(State initial) {
+        m_stateCurrent = initial;
+        (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_ENTER]));
+        while (DISPATCH_TRANSITION == (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_INIT]))) {
+            (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_LEAVE]));
+            this->m_stateCurrent = this->m_stateTemp;
+            (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_ENTER]));
+        }
+        this->m_stateTemp = 0;
+    }
+
+
+    void
+    FSM::dispatch(const Event* event) {
+        if (DISPATCH_TRANSITION == (this->*m_stateCurrent)(event)) {
+            (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_LEAVE]));
+            this->init(this->m_stateTemp);
+        }
+    }
+
+
+
+    //----------------------------------------------------------------------
+    // HSM
+    //
+
+    void
     HSM::init(State initial) {
-        m_stateCurrent = &HSM::stateROOT;
+        m_stateCurrent = (State) &HSM::stateROOT;
         m_stateTemp = initial;
         DispatchOutcome out = DISPATCH_TRANSITION;
         while (DISPATCH_TRANSITION == out) {
@@ -179,7 +193,7 @@ namespace DFActors {
         if (SIG_SUPER == event->signal) {
             return HSM_SUPER(0);
         }
-        return HSM_HANDLED();
+        return FSM_HANDLED();
     }
 
 

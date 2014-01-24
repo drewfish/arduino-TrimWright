@@ -45,12 +45,12 @@ class Blink : public HSM {
             switch (event->signal) {
                 case SIG_ENTER:
                     hw.setLED(true);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case SIG_IDLE:
                     hw.sleep();
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case SIG_TIMER:
-                    return HSM_TRANSITION(&Blink::stateOFF);
+                    return FSM_TRANSITION(&Blink::stateOFF);
                 default:
                     return HSM_SUPER(&Blink::stateROOT);
             }
@@ -61,12 +61,12 @@ class Blink : public HSM {
             switch (event->signal) {
                 case SIG_ENTER:
                     hw.setLED(false);
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case SIG_IDLE:
                     hw.sleep();
-                    return HSM_HANDLED();
+                    return FSM_HANDLED();
                 case SIG_TIMER:
-                    return HSM_TRANSITION(&Blink::stateON);
+                    return FSM_TRANSITION(&Blink::stateON);
                 default:
                     return HSM_SUPER(&Blink::stateROOT);
             }

@@ -26,7 +26,7 @@ namespace DFActors {
 
     // Returned by a state as the outcome of dispatching the event to the state.
     // It is much better to use the macros below, for example:
-    //      return HSM_HANDLED();
+    //      return FSM_HANDLED();
     enum DispatchOutcome {
         DISPATCH_HANDLED,
         DISPATCH_UNHANDLED,
@@ -35,15 +35,15 @@ namespace DFActors {
     };
 
     // Returned by a state to report that it has handled the event.
-    #define HSM_HANDLED()       (DFActors::DISPATCH_HANDLED)
+    #define FSM_HANDLED()       (DFActors::DISPATCH_HANDLED)
 
     // Returned by a state to report that it has not handled the event.
     // This is more useful inside complex conditional structurs in guards.
     // Otherwise it is slightly better to return HSM_SUPER() instead.
-    #define HSM_UNHANDLED()     (DFActors::DISPATCH_UNHANDLED)
+    #define FSM_UNHANDLED()     (DFActors::DISPATCH_UNHANDLED)
 
     // Returned by a state to transition to another state.
-    #define HSM_TRANSITION(s)   ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_TRANSITION)
+    #define FSM_TRANSITION(s)   ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_TRANSITION)
 
     // Returned by a state to report parent state.
     // This should definitely be returned for SIG_SUPER, but is also generally
@@ -51,29 +51,45 @@ namespace DFActors {
     #define HSM_SUPER(s)        ((m_stateTemp = DFActors::State(s)), DFActors::DISPATCH_SUPER)
 
 
-    class HSM;
-    typedef DispatchOutcome (HSM::* State)(const Event* event);
+    class FSM;
+    typedef DispatchOutcome (FSM::* State)(const Event* event);
 
 
-    class HSM {
+    class FSM {
         protected:
             static Event    PSEUDOEVENTS[5];
             State           m_stateCurrent;
             State           m_stateTemp;
 
-            // root of the state hierarchy
-            DispatchOutcome stateROOT(const Event* event);
-
         public:
-            HSM();
+            FSM();
 
-            // This is called when a state is the target of a transition.
+            // This performs the transition to the first (initial) state.
             // This will following the "init" internal transition (iteratively,
             // if there are any).
             void init(State initial);
 
-            // called to dispatch an event
-            // this doesn't generally need to be overriden by child classes
+            // This dispatches an event to the current state.
+            // It doesn't generally need to be overriden by child classes.
+            void dispatch(const Event* event);
+    };
+
+
+    class HSM : public FSM {
+        protected:
+            // root of the state hierarchy
+            // top-level states of the application should report this as their
+            // super states via HSM_SUPER((State) &HSM::stateROOT).
+            DispatchOutcome stateROOT(const Event* event);
+
+        public:
+            // This performs the transition to the first (initial) state.
+            // This will following the "init" internal transition (iteratively,
+            // if there are any).
+            void init(State initial);
+
+            // This dispatches an event to the current state.
+            // It doesn't generally need to be overriden by child classes.
             void dispatch(const Event* event);
     };
 
