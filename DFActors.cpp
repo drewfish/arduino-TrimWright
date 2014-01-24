@@ -17,6 +17,7 @@ namespace DFActors {
         { SIG_INIT },
         { SIG_IDLE }
     };
+    #define _FSM_PSEUDO(state,sig) ((this->*(state))(&(PSEUDOEVENTS[sig])))
 
 
     FSM::FSM() : m_stateCurrent(0), m_stateTemp(0) {
@@ -27,11 +28,11 @@ namespace DFActors {
     void
     FSM::init(State initial) {
         m_stateCurrent = initial;
-        (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_ENTER]));
-        while (DISPATCH_TRANSITION == (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_INIT]))) {
-            (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_LEAVE]));
+        _FSM_PSEUDO(m_stateCurrent, SIG_ENTER);
+        while (DISPATCH_TRANSITION == _FSM_PSEUDO(m_stateCurrent, SIG_INIT)) {
+            _FSM_PSEUDO(m_stateCurrent, SIG_LEAVE);
             this->m_stateCurrent = this->m_stateTemp;
-            (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_ENTER]));
+            _FSM_PSEUDO(m_stateCurrent, SIG_ENTER);
         }
         this->m_stateTemp = 0;
     }
@@ -40,7 +41,7 @@ namespace DFActors {
     void
     FSM::dispatch(const Event* event) {
         if (DISPATCH_TRANSITION == (this->*m_stateCurrent)(event)) {
-            (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_LEAVE]));
+            _FSM_PSEUDO(m_stateCurrent, SIG_LEAVE);
             this->init(this->m_stateTemp);
         }
     }
@@ -63,13 +64,13 @@ namespace DFActors {
             int8_t p = 0;
             for (p = 0; m_stateTemp && (m_stateTemp != source); p++) {
                 path[p] = m_stateTemp;
-                (this->*m_stateTemp)(&(PSEUDOEVENTS[SIG_SUPER]));
+                _FSM_PSEUDO(m_stateTemp, SIG_SUPER);
             }
             for (; p > 0; p--) {
-                (this->*(path[p-1]))(&(PSEUDOEVENTS[SIG_ENTER]));
+                _FSM_PSEUDO(path[p-1], SIG_ENTER);
             }
             m_stateCurrent = target;
-            out = (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_INIT]));
+            out = _FSM_PSEUDO(m_stateCurrent, SIG_INIT);
         }
     }
 
@@ -97,7 +98,7 @@ namespace DFActors {
             source = m_stateTemp;
             out = (this->*m_stateTemp)(event);
             if (out == DISPATCH_UNHANDLED) {
-                out = (this->*m_stateTemp)(&(PSEUDOEVENTS[SIG_SUPER]));
+                out = _FSM_PSEUDO(m_stateTemp, SIG_SUPER);
             }
         } while (out == DISPATCH_SUPER);
 
@@ -111,8 +112,8 @@ namespace DFActors {
         // exit current state to source of transition
         m_stateTemp = m_stateCurrent;
         while (m_stateTemp && (m_stateTemp != source)) {
-            if (DISPATCH_HANDLED == (this->*m_stateTemp)(&(PSEUDOEVENTS[SIG_LEAVE]))) {
-                (this->*m_stateTemp)(&(PSEUDOEVENTS[SIG_SUPER]));
+            if (DISPATCH_HANDLED == _FSM_PSEUDO(m_stateTemp, SIG_LEAVE)) {
+                _FSM_PSEUDO(m_stateTemp, SIG_SUPER);
             }
         }
         m_stateCurrent = source;
@@ -120,8 +121,8 @@ namespace DFActors {
         // transition to self
         if (source == target) {
             // All we need to do is leave-and-enter the state.
-            (this->*source)(&(PSEUDOEVENTS[SIG_LEAVE]));
-            (this->*target)(&(PSEUDOEVENTS[SIG_ENTER]));
+            _FSM_PSEUDO(source, SIG_LEAVE);
+            _FSM_PSEUDO(target, SIG_ENTER);
             m_stateCurrent = target;
         }
         else {
@@ -130,7 +131,7 @@ namespace DFActors {
             m_stateTemp = target;
             do {
                 path[p] = m_stateTemp;
-                out = (this->*m_stateTemp)(&(PSEUDOEVENTS[SIG_SUPER]));
+                out = _FSM_PSEUDO(m_stateTemp, SIG_SUPER);
                 p++;
             } while (m_stateTemp && (out == DISPATCH_SUPER));
             path_end = p;
@@ -155,8 +156,8 @@ namespace DFActors {
                         break;
                     }
                     // leave this state and enter the super state
-                    if (DISPATCH_HANDLED == (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_LEAVE]))) {
-                        (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_SUPER]));
+                    if (DISPATCH_HANDLED == _FSM_PSEUDO(m_stateCurrent, SIG_LEAVE)) {
+                        _FSM_PSEUDO(m_stateCurrent, SIG_SUPER);
                     }
                     m_stateCurrent = m_stateTemp;
                 }
@@ -165,23 +166,23 @@ namespace DFActors {
             // drill down into the target
             if (-1 != enter_start) {
                 for (p = enter_start; p >= 0; p--) {
-                    (this->*(path[p]))(&(PSEUDOEVENTS[SIG_ENTER]));
+                    _FSM_PSEUDO(path[p], SIG_ENTER);
                     m_stateCurrent = path[p];
                 }
             }
         } // not a self-transition
 
         // Handle the initial transition(s) of the target state
-        while (DISPATCH_TRANSITION == (this->*m_stateCurrent)(&(PSEUDOEVENTS[SIG_INIT]))) {
+        while (DISPATCH_TRANSITION == _FSM_PSEUDO(m_stateCurrent, SIG_INIT)) {
             source = m_stateCurrent;    // the transition "from" state
             target = m_stateTemp;       // the transition "to" state
             p = 0;
             for (p = 0; m_stateTemp && (m_stateTemp != source); p++) {
                 path[p] = m_stateTemp;
-                (this->*m_stateTemp)(&(PSEUDOEVENTS[SIG_SUPER]));
+                _FSM_PSEUDO(m_stateTemp, SIG_SUPER);
             }
             for (; p > 0; p--) {
-                (this->*(path[p-1]))(&(PSEUDOEVENTS[SIG_ENTER]));
+                _FSM_PSEUDO(path[p-1], SIG_ENTER);
             }
             m_stateCurrent = target;
         }
