@@ -1,33 +1,28 @@
-------hw setup----
-dispatch SUPER to state ON
 dispatch ENTER to state ON
-------hw setLED---- ON
+------setLED---- ON
 dispatch INIT to state ON
-------hw loop---- 0
-------hw loop---- 1
-------hw loop---- 2
+------loop---- 0
+------loop---- 1
+------loop---- 2
 dispatch TIMER to state ON
-dispatch SUPER to state OFF
 dispatch LEAVE to state ON
 dispatch ENTER to state OFF
-------hw setLED---- OFF
+------setLED---- OFF
 dispatch INIT to state OFF
-------hw loop---- 3
-------hw loop---- 4
-------hw loop---- 5
+------loop---- 3
+------loop---- 4
+------loop---- 5
 dispatch TIMER to state OFF
-dispatch SUPER to state ON
 dispatch LEAVE to state OFF
 dispatch ENTER to state ON
-------hw setLED---- ON
+------setLED---- ON
 dispatch INIT to state ON
-------hw loop---- 6
-------hw loop---- 7
-------hw loop---- 8
+------loop---- 6
+------loop---- 7
+------loop---- 8
 dispatch TIMER to state ON
-dispatch SUPER to state OFF
 dispatch LEAVE to state ON
 dispatch ENTER to state OFF
-------hw setLED---- OFF
+------setLED---- OFF
 dispatch INIT to state OFF
-------hw loop---- 9
+------loop---- 9

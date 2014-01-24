@@ -18,6 +18,8 @@ class Blink : public FSM {
                     return FSM_HANDLED();
                 case SIG_TIMER:
                     return FSM_TRANSITION(&Blink::stateOFF);
+                default:
+                    return FSM_HANDLED();
             }
         }
 
@@ -28,6 +30,8 @@ class Blink : public FSM {
                     return FSM_HANDLED();
                 case SIG_TIMER:
                     return FSM_TRANSITION(&Blink::stateON);
+                default:
+                    return FSM_HANDLED();
             }
         }
 } blink;
