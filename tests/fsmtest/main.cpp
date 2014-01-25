@@ -1,6 +1,5 @@
-//
-// g++ -o main main.cpp
-//
+// if building a real arduino program than no-op this file
+#ifndef ARDUINO
 
 
 #include <iostream>
@@ -263,3 +262,4 @@ int main(int argc, const char* argv[]) {
 }
 
 
+#endif

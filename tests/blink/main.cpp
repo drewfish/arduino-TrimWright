@@ -1,3 +1,7 @@
+// if building a real arduino program than no-op this file
+#ifndef ARDUINO
+
+
 #include <stdint.h>
 #include <iostream>
 using namespace std;
@@ -75,3 +79,4 @@ int main(int argc, const char* argv[]) {
 }
 
 
+#endif
