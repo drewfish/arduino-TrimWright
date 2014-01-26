@@ -84,7 +84,9 @@ namespace TrimWright {
 
             // This dispatches an event to the current state.
             // It doesn't generally need to be overriden by child classes.
-            void dispatch(const Event* event);
+            virtual void dispatch(const Event* event);
+
+            virtual ~FSM() {}
     };
 
 
@@ -110,7 +112,7 @@ namespace TrimWright {
 
             // This dispatches an event to the current state.
             // It doesn't generally need to be overriden by child classes.
-            void dispatch(const Event* event);
+            virtual void dispatch(const Event* event);
     };
 
 
