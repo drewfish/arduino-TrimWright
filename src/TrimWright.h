@@ -1,3 +1,24 @@
+/*
+Copyright 2019 Drew Folta <drew@folta.net>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 #ifndef TRIMWRIGHT_H
 #define TRIMWRIGHT_H
 
@@ -42,7 +63,7 @@ namespace TrimWright {
     #define TW_HANDLED()        (TrimWright::DISPATCH_HANDLED)
 
     // Returned by a state to report that it has not handled the event.
-    // This is most useful inside complex conditional structurs in guards.
+    // This is most useful inside complex conditional structures in guards.
     // Otherwise it is slightly better to return TW_SUPER() instead.
     // States should never return this when handling SIG_ENTER or SIG_LEAVE.
     #define TW_UNHANDLED()      (TrimWright::DISPATCH_UNHANDLED)
@@ -119,7 +140,7 @@ namespace TrimWright {
 
     //----------------------------------------------------------------------
     // Event Queue
-    // This is handy if it's a difficult or unnatural for your sketch to
+    // This is handy if it's difficult or unnatural for your sketch to
     // dispatch the event as soon as it is generated.
     //
 
@@ -154,8 +175,7 @@ namespace TrimWright {
         public:
 
             QueueRingBuffer() : m_front(0), m_back(0), m_size(0) {
-                // TODO:  needed?
-                //memset((void*) m_buffer, 0, MAX_EVENTS * sizeof(EventType));
+                // nothing else to do
             }
 
             // copies the event into the ring buffer
@@ -203,7 +223,7 @@ namespace TrimWright {
 
     //----------------------------------------------------------------------
     // "Sugar" Functions
-    // These are necessary but might be handy.
+    // These aren't necessary but might be handy.
     //
 
     // Dispatches an event (of the Event class) with the SIG_IDLE signal.

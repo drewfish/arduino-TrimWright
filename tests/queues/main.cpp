@@ -6,8 +6,8 @@
 #include <iostream>
 using namespace std;
 
-#include "../../TrimWright.h"
-#include "../../TrimWright.cpp"
+#include "../../src/TrimWright.h"
+#include "../../src/TrimWright.cpp"
 using namespace TrimWright;
 
 
