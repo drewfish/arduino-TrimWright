@@ -104,8 +104,8 @@ void ISR_Button_Down() {
 
 void setup() {
     blinker.setup();
-    pinMode(11, INPUT_PULLUP);
-    pinMode(12, INPUT_PULLUP);
+    pinMode(11, INPUT_PULLDOWN);
+    pinMode(12, INPUT_PULLDOWN);
     pinMode(13, OUTPUT);
     attachInterrupt(11, ISR_Button_Up, RISING);
     attachInterrupt(12, ISR_Button_Down, RISING);

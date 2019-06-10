@@ -134,8 +134,7 @@ class Button : public TrimWright::HSM {
                     return TW_TRANSITION(&Button::stateREPEATING);
                 case SIG_BUTTON_UP:
                     click();
-                    // bubble-up event handling to our parent
-                    return TW_UNHANDLED();
+                    return TW_TRANSITION(&Button::stateUP);
                 default:
                     return TW_SUPER(&Button::stateDOWN);
             }
@@ -179,7 +178,7 @@ void ISR_Button_Change() {
 }
 
 void Button::setup() {
-    pinMode(12, INPUT_PULLUP);
+    pinMode(12, INPUT_PULLDOWN);
     bool down = digitalRead(12) == LOW;
     if (down) {
         init((TrimWright::State) &Button::stateDOWN);

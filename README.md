@@ -29,6 +29,8 @@ See LICENSE.txt for details.
 In this example we create a `blinker` which has three states: off, slow, fast.
 Our hardware has two buttons, up (pin 11) and down (pin 12), which change the state.
 
+![states](examples/fsm/states.png)
+
 ```cpp
 #include <TrimWright.h>
 
@@ -115,8 +117,8 @@ void ISR_Button_Down() {
 
 void setup() {
     blinker.setup();
-    pinMode(11, INPUT_PULLUP);
-    pinMode(12, INPUT_PULLUP);
+    pinMode(11, INPUT_PULLDOWN);
+    pinMode(12, INPUT_PULLDOWN);
     pinMode(13, OUTPUT);
     attachInterrupt(11, ISR_Button_Up, RISING);
     attachInterrupt(12, ISR_Button_Down, RISING);
@@ -140,6 +142,8 @@ A click of the button causes the LED to blink faster, and holding the button dow
 
 This uses hierarchical states:  HOLDING and REPEATING are child states of DOWN.
 Each state handles the `SIG_SUPER` event and responds with its parent.
+
+![states](examples/hsm/states.png)
 
 This example is a little tricky since we need a timer to tell us that the user has held the button down a while.
 We'll use a software timer, but some microcontrollers have a builtin hardware timer which can be used.
@@ -263,8 +267,7 @@ class Button : public TrimWright::HSM {
                     return TW_TRANSITION(&Button::stateREPEATING);
                 case SIG_BUTTON_UP:
                     click();
-                    // bubble-up event handling to our parent
-                    return TW_UNHANDLED();
+                    return TW_TRANSITION(&Button::stateUP);
                 default:
                     return TW_SUPER(&Button::stateDOWN);
             }
@@ -308,7 +311,7 @@ void ISR_Button_Change() {
 }
 
 void Button::setup() {
-    pinMode(12, INPUT_PULLUP);
+    pinMode(12, INPUT_PULLDOWN);
     bool down = digitalRead(12) == LOW;
     if (down) {
         init((TrimWright::State) &Button::stateDOWN);
