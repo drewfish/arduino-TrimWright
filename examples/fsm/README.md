@@ -1,6 +1,8 @@
 In this example we create a `blinker` which has three states: off, slow, fast.
 Our hardware has two buttons, up (pin 11) and down (pin 12), which change the state.
 
+![states](states.png)
+
 Things to try:
 
 * comment out the "wrap around" conditions and see how that affects what the buttons do
