@@ -22,6 +22,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef TRIMWRIGHT_H
 #define TRIMWRIGHT_H
 
+#ifndef TW_METHOD_INIT
+    #define TW_METHOD_INIT init
+#endif
+
 #ifndef TRIMWRIGHT_MAX_STATE_DEPTH
     #define TRIMWRIGHT_MAX_STATE_DEPTH 6
 #endif
@@ -101,7 +105,7 @@ namespace TrimWright {
             // This performs the transition to the first (initial) state.
             // This will following the "init" internal transition (iteratively,
             // if there are any).
-            void init(State initial);
+            void TW_METHOD_INIT(State initial);
 
             // This dispatches an event to the current state.
             // It doesn't generally need to be overriden by child classes.
@@ -129,7 +133,7 @@ namespace TrimWright {
             // This performs the transition to the first (initial) state.
             // This will following the "init" internal transition (iteratively,
             // if there are any).
-            void init(State initial);
+            void TW_METHOD_INIT(State initial);
 
             // This dispatches an event to the current state.
             // It doesn't generally need to be overriden by child classes.
