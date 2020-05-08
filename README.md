@@ -560,3 +560,32 @@ This optional utility function dispatches all events in the queue to the state m
 If the queue is empty and `idleIfEmpty` is `true`, then a `SIG_IDLE` event type is dispatched.
 
 
+## Advanced Considerations
+
+
+### Renaming the `init()` Method
+When TrimWright classes FSM or HSM are used with multiple inheritance the `init()` method
+could be confused with the same method from other ancestor classes.
+The `TW_METHOD_INIT` preprocessing macro can be defined, effectively renaming the `init()` method.
+
+In the Arduino IDE you can define custom macros in the `platform.local.txt` file.
+It needs to reside beside the `platform.txt` file for the board which you are using,
+which is usually `{arduino-install-dir}/packages/{vendor}/hardware/{architecture}/{version}/platform.local.txt`.
+(`{vendor}` is the board vendor, e.g. `arduino` or `adafruit` or `SparkFun`.
+`{architecture}` is the MCU architecture, e.g. `avr` or `samd`.
+`{version}` is the version of the architecture, you'll usually only have one installed.)
+
+example `platform.local.txt` file:
+```cpp
+compiler.cpp.extra_flags="-DTW_METHOD_INIT=initStateMachine"
+```
+
+When using platformio you can use the `build_flags` (in `[env]` sections) to define the macro.
+
+example `platformio.ini` file:
+```ini
+[env:myboard]
+build_flags = -D TW_METHOD_INIT=initStateMachine
+```
+
+

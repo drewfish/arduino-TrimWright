@@ -46,7 +46,7 @@ namespace TrimWright {
 
 
     void
-    FSM::init(State initial) {
+    FSM::TW_METHOD_INIT(State initial) {
         m_stateCurrent = initial;
         _TW_PSEUDO(m_stateCurrent, SIG_ENTER);
         while (DISPATCH_TRANSITION == _TW_PSEUDO(m_stateCurrent, SIG_INIT)) {
@@ -62,7 +62,7 @@ namespace TrimWright {
     FSM::dispatch(const Event* event) {
         if (DISPATCH_TRANSITION == (this->*m_stateCurrent)(event)) {
             _TW_PSEUDO(m_stateCurrent, SIG_LEAVE);
-            this->init(this->m_stateTemp);
+            this->TW_METHOD_INIT(this->m_stateTemp);
         }
     }
 
@@ -73,7 +73,7 @@ namespace TrimWright {
     //
 
     void
-    HSM::init(State initial) {
+    HSM::TW_METHOD_INIT(State initial) {
         m_stateCurrent = (State) &HSM::stateROOT;
         m_stateTemp = initial;
         DispatchOutcome out = DISPATCH_TRANSITION;
