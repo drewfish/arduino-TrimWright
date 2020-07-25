@@ -403,7 +403,7 @@ typedef DispatchOutcome (TrimWright::FSM::* State)(const Event* event);
 ```
 
 Each state is a member function with the above signature.
-The meaning of `DispatchOutcome` is best ignored by using one of the `TW_` macros mentioned below.
+The meaning of `DispatchOutcome` is best ignored by using one of the `TW_` macros mentioned above.
 
 
 #### method init()
@@ -518,7 +518,7 @@ typedef DispatchOutcome (TrimWright::HSM::* State)(const Event* event);
 ```
 
 Each state is a member function with the above signature.
-The meaning of `DispatchOutcome` is best ignored by using one of the `TW_` macros mentioned below.
+The meaning of `DispatchOutcome` is best ignored by using one of the `TW_` macros mentioned above.
 
 
 #### method init()
