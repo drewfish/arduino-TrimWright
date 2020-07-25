@@ -63,7 +63,7 @@ class Blink : public FSM {
 
 int main(int argc, const char* argv[]) {
     // setup
-    blink.init((State) &Blink::stateON);
+    blink.init((FSM::State) &Blink::stateON);
 
     // loop
     uint32_t loops = 0;

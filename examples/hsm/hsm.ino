@@ -95,7 +95,7 @@ class Button : public TrimWright::HSM {
         TrimWright::QueueRingBuffer<TrimWright::Event, 6> queue;
         void setup();   // implemented below
         void tick() {
-            TrimWright::dispatchAll(this, &queue, false);
+            this->dispatchAll(&queue, false);
         }
         void click() {
             led.changeSpeed(true);
@@ -181,9 +181,9 @@ void Button::setup() {
     pinMode(12, INPUT_PULLDOWN);
     bool down = digitalRead(12) == LOW;
     if (down) {
-        init((TrimWright::State) &Button::stateDOWN);
+        init((TrimWright::HSM::State) &Button::stateDOWN);
     } else {
-        init((TrimWright::State) &Button::stateUP);
+        init((TrimWright::HSM::State) &Button::stateUP);
     }
     attachInterrupt(12, ISR_Button_Change, CHANGE);
 }

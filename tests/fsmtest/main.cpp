@@ -3,6 +3,7 @@
 
 
 #include <iostream>
+#include <cstdlib>
 using namespace std;
 
 #include "../../src/TrimWright.h"
@@ -244,7 +245,7 @@ class Test : public TrimWright::FSM {
 
 int main(int argc, const char* argv[]) {
     cout << "INIT:  ";
-    test.init((TrimWright::State) &Test::stateS2);
+    test.init((TrimWright::FSM::State) &Test::stateS2);
     cout << "   foo=" << int(test.foo) << endl;
 
     const char* EVENTS = "GIAD DCEE GII";
