@@ -26,18 +26,13 @@ namespace TrimWright {
 
 
 
+    #define _TW_PSEUDO(state,sig) ((this->*(state))(&(PSEUDOEVENTS[sig])))
+
+
+
     //----------------------------------------------------------------------
     // FINITE STATE MACHINE
     //
-
-    Event FSM::PSEUDOEVENTS[5] = {
-        { SIG_SUPER },  // not needed by FSM but used by HSM
-        { SIG_ENTER },
-        { SIG_LEAVE },
-        { SIG_INIT },
-        { SIG_IDLE }
-    };
-    #define _TW_PSEUDO(state,sig) ((this->*(state))(&(PSEUDOEVENTS[sig])))
 
 
     FSM::FSM() : m_stateCurrent(0), m_stateTemp(0) {
@@ -67,10 +62,38 @@ namespace TrimWright {
     }
 
 
+    void
+    FSM::dispatchIdle() {
+        this->dispatch(&(PSEUDOEVENTS[SIG_IDLE]));
+    }
+
+
+    void
+    FSM::dispatchAll(IQueue* queue, bool idleIfEmpty) {
+        if (queue->size()) {
+            while (queue->size()) {
+                this->dispatch(queue->front());
+                queue->pop_front();
+            }
+        }
+        else {
+            if (idleIfEmpty) {
+                this->dispatchIdle();
+            }
+        }
+    }
+
+
 
     //----------------------------------------------------------------------
     // HIERARCHICAL STATE MACHINE
     //
+
+
+    HSM::HSM() : m_stateCurrent(0), m_stateTemp(0) {
+        // nothing to do
+    }
+
 
     void
     HSM::TW_METHOD_INIT(State initial) {
@@ -209,6 +232,28 @@ namespace TrimWright {
     }
 
 
+    void
+    HSM::dispatchIdle() {
+        this->dispatch(&(PSEUDOEVENTS[SIG_IDLE]));
+    }
+
+
+    void
+    HSM::dispatchAll(IQueue* queue, bool idleIfEmpty) {
+        if (queue->size()) {
+            while (queue->size()) {
+                this->dispatch(queue->front());
+                queue->pop_front();
+            }
+        }
+        else {
+            if (idleIfEmpty) {
+                this->dispatchIdle();
+            }
+        }
+    }
+
+
     DispatchOutcome
     HSM::stateROOT(const Event* event) {
         if (SIG_SUPER == event->signal) {
@@ -220,28 +265,30 @@ namespace TrimWright {
 
 
     //----------------------------------------------------------------------
-    // SUGAR FUNCTIONS
+    // BACKWARDS-COMPATIBILITY FUNCTIONS
     //
 
     void
     dispatchIdle(FSM* machine) {
-        machine->dispatch(&(FSM::PSEUDOEVENTS[SIG_IDLE]));
+        machine->dispatchIdle();
+    }
+
+
+    void
+    dispatchIdle(HSM* machine) {
+        machine->dispatchIdle();
     }
 
 
     void
     dispatchAll(FSM* machine, IQueue* queue, bool idleIfEmpty) {
-        if (queue->size()) {
-            while (queue->size()) {
-                machine->dispatch(queue->front());
-                queue->pop_front();
-            }
-        }
-        else {
-            if (idleIfEmpty) {
-                dispatchIdle(machine);
-            }
-        }
+        machine->dispatchAll(queue, idleIfEmpty);
+    }
+
+
+    void
+    dispatchAll(HSM* machine, IQueue* queue, bool idleIfEmpty) {
+        machine->dispatchAll(queue, idleIfEmpty);
     }
 
 

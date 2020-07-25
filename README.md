@@ -45,7 +45,7 @@ class Blinker : public TrimWright::FSM {
         uint16_t delayOff;
     public:
         void setup() {
-            init((TrimWright::State) &Blinker::stateOFF);
+            init((TrimWright::FSM::State) &Blinker::stateOFF);
         }
         void blink() {
             if (delayOn) {
@@ -228,7 +228,7 @@ class Button : public TrimWright::HSM {
         TrimWright::QueueRingBuffer<TrimWright::Event, 6> queue;
         void setup();   // implemented below
         void tick() {
-            TrimWright::dispatchAll(this, &queue, false);
+            this->dispatchAll(&queue, false);
         }
         void click() {
             led.changeSpeed(true);
@@ -314,9 +314,9 @@ void Button::setup() {
     pinMode(12, INPUT_PULLDOWN);
     bool down = digitalRead(12) == LOW;
     if (down) {
-        init((TrimWright::State) &Button::stateDOWN);
+        init((TrimWright::HSM::State) &Button::stateDOWN);
     } else {
-        init((TrimWright::State) &Button::stateUP);
+        init((TrimWright::HSM::State) &Button::stateUP);
     }
     attachInterrupt(12, ISR_Button_Change, CHANGE);
 }
@@ -371,21 +371,15 @@ The following signals (event types) have special meaning:
 All signals less than `SIG_USER` are reserved by TrimWright.
 
 
-### typedef TrimWright::State
-```cpp
-typedef DispatchOutcome (FSM::* State)(const Event* event);
-```
-
-Each state is a member function with the above signature.
-The meaning of `DispatchOutcome` is best ignored by using one of the `TW_` macros mentioned below.
-
-
 ### class TrimWright::FSM
 ```cpp
 class FSM {
     public:
+        typedef DispatchOutcome (FSM::* State)(const Event* event);
         void init(State initial);
         void dispatch(const Event* event);
+        void dispatchIdle();
+        void dispatchAll(IQueue* queue, bool idleIfEmpty);
 };
 ```
 
@@ -403,6 +397,15 @@ It should perform appropriate actions for the event and use one of the following
     * the state machine should transition to the new state
 
 
+#### typedef TrimWright::FSM::State
+```cpp
+typedef DispatchOutcome (TrimWright::FSM::* State)(const Event* event);
+```
+
+Each state is a member function with the above signature.
+The meaning of `DispatchOutcome` is best ignored by using one of the `TW_` macros mentioned above.
+
+
 #### method init()
 This should be called to setup the initial state of the state machine.
 It can be called from a constructor.
@@ -414,6 +417,23 @@ It will perform a transition if the state indicates that is necessary.
 During transitions it'll dispatch the `SIG_LEAVE` and `SIG_ENTER` pseudo-events as needed.
 
 
+#### method TrimWright::dispatchIdle
+```cpp
+void dispatchIdle();
+```
+
+This optional utility method dispatches a `SIG_IDLE` event type to the state machine.
+
+
+#### method TrimWright::dispatchAll
+```cpp
+void dispatchAll(IQueue* queue, bool idleIfEmpty);
+```
+
+This optional utility method dispatches all events in the queue to the state machine.
+If the queue is empty and `idleIfEmpty` is `true`, then a `SIG_IDLE` event type is dispatched.
+
+
 #### example
 ```cpp
 enum {
@@ -423,7 +443,7 @@ enum {
 
 class Machine : public TrimWright::FSM {
     Machine() {
-        init((TrimWright::State) &Machine::stateON);
+        init((TrimWright::FSM::State) &Machine::stateON);
     }
     TrimWright::DispatchOutcome stateON(const TrimWright::Event *event) {
         switch(event->signal) {
@@ -460,10 +480,13 @@ void loop() {
 
 ### class TrimWright::HSM
 ```cpp
-class HSM : public FSM {
+class HSM {
     public:
+        typedef DispatchOutcome (HSM::* State)(const Event* event);
         void init(State initial);
         void dispatch(const Event* event);
+        void dispatchIdle();
+        void dispatchAll(IQueue* queue, bool idleIfEmpty);
 };
 ```
 
@@ -489,6 +512,15 @@ Deeper state machines can be supported by defining the `TRIMWRIGHT_MAX_STATE_DEP
 Defining it to a higher number than 6 will cause more call stack to be used during `init()` and `dispatch()`.
 
 
+#### typedef TrimWright::HSM::State
+```cpp
+typedef DispatchOutcome (TrimWright::HSM::* State)(const Event* event);
+```
+
+Each state is a member function with the above signature.
+The meaning of `DispatchOutcome` is best ignored by using one of the `TW_` macros mentioned above.
+
+
 #### method init()
 This should be called to setup the initial state of the state machine.
 It can be called from a constructor.
@@ -499,6 +531,23 @@ It'll dispatch the `SIG_INIT` and `SIG_ENTER` pseudo-events as needed.
 This method dispatches an event to the current state.
 It will perform a transition if the state indicates that is necessary.
 During transitions it'll dispatch the `SIG_LEAVE`, `SIG_ENTER`, `SIG_SUPER`, and `SIG_INIT` pseudo-events as needed.
+
+
+#### method TrimWright::dispatchIdle
+```cpp
+void dispatchIdle();
+```
+
+This optional utility method dispatches a `SIG_IDLE` event type to the state machine.
+
+
+#### method TrimWright::dispatchAll
+```cpp
+void dispatchAll(IQueue* queue, bool idleIfEmpty);
+```
+
+This optional utility method dispatches all events in the queue to the state machine.
+If the queue is empty and `idleIfEmpty` is `true`, then a `SIG_IDLE` event type is dispatched.
 
 
 ### abstract class TrimWright::IQueue
@@ -541,23 +590,6 @@ class QueueRingBuffer : public IQueue {
 This templated class provides a fixed-sized implementation of `IQueue`.
 The `push_back()` method copies events into the queue.
 Care should be taken so that no more than `MAX_EVENTS` are in the queue.
-
-
-### utility function TrimWright::dispatchIdle
-```cpp
-void dispatchIdle(FSM* machine);
-```
-
-This optional utility function dispatches a `SIG_IDLE` event type to the state machine.
-
-
-### utility function TrimWright::dispatchAll
-```cpp
-void dispatchAll(FSM* machine, IQueue* queue, bool idleIfEmpty);
-```
-
-This optional utility function dispatches all events in the queue to the state machine.
-If the queue is empty and `idleIfEmpty` is `true`, then a `SIG_IDLE` event type is dispatched.
 
 
 ## Advanced Considerations

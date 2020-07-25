@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <iostream>
+#include <cstdio>
 using namespace std;
 
 #include "../../src/TrimWright.h"

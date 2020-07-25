@@ -32,7 +32,7 @@ class Blinker : public TrimWright::FSM {
         uint16_t delayOff;
     public:
         void setup() {
-            init((TrimWright::State) &Blinker::stateOFF);
+            init((TrimWright::FSM::State) &Blinker::stateOFF);
         }
         void blink() {
             if (delayOn) {

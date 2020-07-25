@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <iostream>
+#include <cstdio>
 using namespace std;
 
 #include "../../src/TrimWright.h"
@@ -48,7 +49,7 @@ class StateMachine : public FSM {
 
 void testDispatchIdle(FSM* machine) {
     cout << "---------------------------------------------- test dispatchIdle()" << endl;
-    dispatchIdle(machine);
+    machine->dispatchIdle();
     cout << endl;
 }
 
@@ -63,7 +64,7 @@ void testDispatchAll(FSM* machine) {
     e.signal = SIG_B; queue.push_back(&e);
     e.signal = SIG_C; queue.push_back(&e);
     e.signal = SIG_D; queue.push_back(&e);
-    dispatchAll(machine, &queue, false);
+    machine->dispatchAll(&queue, false);
     cout << "----" << endl;
 
     dispatchAll(machine, &queue, false);
@@ -78,10 +79,10 @@ void testDispatchAll(FSM* machine) {
     e.signal = SIG_H; queue.push_back(&e);
     e.signal = SIG_I; queue.push_back(&e);
     e.signal = SIG_J; queue.push_back(&e);
-    dispatchAll(machine, &queue, true);
+    machine->dispatchAll(&queue, true);
     cout << "----" << endl;
 
-    dispatchAll(machine, &queue, true);
+    machine->dispatchAll(&queue, true);
     cout << "----" << endl;
 
     cout << endl;
@@ -90,7 +91,7 @@ void testDispatchAll(FSM* machine) {
 
 int main(int argc, const char* argv[]) {
     StateMachine machine;
-    machine.init((State) &StateMachine::stateDEBUG);
+    machine.init((FSM::State) &StateMachine::stateDEBUG);
 
     testDispatchIdle(&machine);
     testDispatchAll(&machine);

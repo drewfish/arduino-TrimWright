@@ -52,6 +52,13 @@ namespace TrimWright {
         uint8_t signal;
     };
 
+    Event PSEUDOEVENTS[5] = {
+        { SIG_SUPER },  // not needed by FSM but used by HSM
+        { SIG_ENTER },
+        { SIG_LEAVE },
+        { SIG_INIT },
+        { SIG_IDLE },
+    };
 
     // Returned by a state as the outcome of dispatching an event to the state.
     // It is much better to use the macros below, for example:
@@ -74,71 +81,12 @@ namespace TrimWright {
 
     // Returned by a state to transition to another state.
     // States should never return this when handling SIG_ENTER or SIG_LEAVE.
-    #define TW_TRANSITION(s)    ((m_stateTemp = TrimWright::State(s)), TrimWright::DISPATCH_TRANSITION)
+    #define TW_TRANSITION(s)    ((m_stateTemp = State(s)), TrimWright::DISPATCH_TRANSITION)
 
     // Returned by a state (in an HSM) to report the parent state.
     // This should definitely be returned for SIG_SUPER, but is also generally
     // returned for any unhandled event.
-    #define TW_SUPER(s)         ((m_stateTemp = TrimWright::State(s)), TrimWright::DISPATCH_SUPER)
-
-
-
-    //----------------------------------------------------------------------
-    // Finite State Machine class
-    // This is a good choice if the state machine is "flat" (not hierarchical).
-    //
-
-    class FSM;
-    typedef DispatchOutcome (FSM::* State)(const Event* event);
-
-
-    class FSM {
-        protected:
-            static Event    PSEUDOEVENTS[5];
-            State           m_stateCurrent;
-            State           m_stateTemp;
-            friend void dispatchIdle(FSM*);
-
-        public:
-            FSM();
-
-            // This performs the transition to the first (initial) state.
-            // This will following the "init" internal transition (iteratively,
-            // if there are any).
-            void TW_METHOD_INIT(State initial);
-
-            // This dispatches an event to the current state.
-            // It doesn't generally need to be overriden by child classes.
-            virtual void dispatch(const Event* event);
-
-            virtual ~FSM() {}
-    };
-
-
-
-    //----------------------------------------------------------------------
-    // Hierarchical State Machine class
-    // This is a good choice if the states in the state machine are
-    // hierarchical.
-    //
-
-    class HSM : public FSM {
-        protected:
-            // root of the state hierarchy
-            // top-level states of the application should report this as their
-            // super states via TW_SUPER((State) &HSM::stateROOT).
-            DispatchOutcome stateROOT(const Event* event);
-
-        public:
-            // This performs the transition to the first (initial) state.
-            // This will following the "init" internal transition (iteratively,
-            // if there are any).
-            void TW_METHOD_INIT(State initial);
-
-            // This dispatches an event to the current state.
-            // It doesn't generally need to be overriden by child classes.
-            virtual void dispatch(const Event* event);
-    };
+    #define TW_SUPER(s)         ((m_stateTemp = State(s)), TrimWright::DISPATCH_SUPER)
 
 
 
@@ -165,6 +113,87 @@ namespace TrimWright {
 
             virtual ~IQueue() {}
     };
+
+
+
+    //----------------------------------------------------------------------
+    // Finite State Machine class
+    // This is a good choice if the state machine is "flat" (not hierarchical).
+    //
+
+    class FSM {
+        public:
+            typedef DispatchOutcome (FSM::* State)(const Event* event);
+
+        protected:
+            State   m_stateCurrent;
+            State   m_stateTemp;
+
+        public:
+            FSM();
+
+            // This performs the transition to the first (initial) state.
+            // This will following the "init" internal transition (iteratively,
+            // if there are any).
+            void TW_METHOD_INIT(State initial);
+
+            // This dispatches an event to the current state.
+            // It doesn't generally need to be overriden by child classes.
+            void dispatch(const Event* event);
+
+            // This isn't necessary but might be handy.
+            // Dispatches an event (of the Event class) with the SIG_IDLE signal.
+            void dispatchIdle();
+
+            // This isn't necessary but might be handy.
+            // Dispatches all events in the queue to the state machine.
+            // If `idleIfEmpty` is true and there are no events in the queue
+            // then a SIG_IDLE event will be dispatched to the state machine.
+            void dispatchAll(IQueue* queue, bool idleIfEmpty);
+    };
+
+
+
+    //----------------------------------------------------------------------
+    // Hierarchical State Machine class
+    // This is a good choice if the states in the state machine are
+    // hierarchical.
+    //
+
+    class HSM {
+        public:
+            typedef DispatchOutcome (HSM::* State)(const Event* event);
+
+        protected:
+            State   m_stateCurrent;
+            State   m_stateTemp;
+
+            // root of the state hierarchy
+            // top-level states of the application should report this as their
+            // super states via TW_SUPER((State) &HSM::stateROOT).
+            DispatchOutcome stateROOT(const Event* event);
+
+        public:
+            HSM();
+
+            // This performs the transition to the first (initial) state.
+            // This will following the "init" internal transition (iteratively,
+            // if there are any).
+            void TW_METHOD_INIT(State initial);
+
+            // This dispatches an event to the current state.
+            // It doesn't generally need to be overriden by child classes.
+            void dispatch(const Event* event);
+
+            // Dispatches an event (of the Event class) with the SIG_IDLE signal.
+            void dispatchIdle();
+
+            // Dispatches all events in the queue to the state machine.
+            // If `idleIfEmpty` is true and there are no events in the queue
+            // then a SIG_IDLE event will be dispatched to the state machine.
+            void dispatchAll(IQueue* queue, bool idleIfEmpty);
+    };
+
 
 
     // a queue implementation that stores (copies of) the events in a ring buffer
@@ -226,19 +255,13 @@ namespace TrimWright {
 
 
     //----------------------------------------------------------------------
-    // "Sugar" Functions
-    // These aren't necessary but might be handy.
+    // These are mainly for backwards compatibility with older versions
+    // of TrimWright.
     //
-
-    // Dispatches an event (of the Event class) with the SIG_IDLE signal.
     void dispatchIdle(FSM* machine);
-
-
-    // Dispatches all events in the queue to the state machine.
-    // If `idleIfEmpty` is true and there are no events in the queue
-    // then a SIG_IDLE event will be dispatched to the state machine.
+    void dispatchIdle(HSM* machine);
     void dispatchAll(FSM* machine, IQueue* queue, bool idleIfEmpty);
-
+    void dispatchAll(HSM* machine, IQueue* queue, bool idleIfEmpty);
 };
 
 
